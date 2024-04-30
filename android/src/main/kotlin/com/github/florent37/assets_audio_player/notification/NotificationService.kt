@@ -13,6 +13,7 @@ import android.os.Build
 import android.os.IBinder
 import android.support.v4.media.MediaMetadataCompat
 import android.support.v4.media.session.PlaybackStateCompat
+import android.support.v4.media.session.PlaybackStateCompat.ACTION_SEEK_TO
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import androidx.media.session.MediaButtonReceiver
@@ -23,11 +24,10 @@ import kotlinx.coroutines.launch
 import kotlin.math.abs
 import android.app.PendingIntent.FLAG_UPDATE_CURRENT
 import android.app.PendingIntent.FLAG_IMMUTABLE
-import android.content.pm.ServiceInfo.FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK
 import android.support.v4.media.session.MediaSessionCompat
 import androidx.annotation.RequiresApi
 import com.github.florent37.assets_audio_player.AssetsAudioPlayerPlugin
-import com.github.florent37.assets_audio_player.R
+import android.R
 
 class NotificationService : Service() {
 
@@ -165,27 +165,27 @@ class NotificationService : Service() {
     }
 
     private fun getSmallIcon(context: Context): Int {
-        return getCustomIconOrDefault(context, manifestIcon, null, R.drawable.exo_icon_circular_play)
+        return getCustomIconOrDefault(context, manifestIcon, null, R.drawable.ic_media_play)
     }
 
     private fun getPlayIcon(context: Context, resourceName: String?): Int {
-        return getCustomIconOrDefault(context, manifestIconPlay, resourceName, R.drawable.exo_icon_play)
+        return getCustomIconOrDefault(context, manifestIconPlay, resourceName, R.drawable.ic_media_play)
     }
 
     private fun getPauseIcon(context: Context, resourceName: String?): Int {
-        return getCustomIconOrDefault(context, manifestIconPause, resourceName, R.drawable.exo_icon_pause)
+        return getCustomIconOrDefault(context, manifestIconPause, resourceName, R.drawable.ic_media_pause)
     }
 
     private fun getNextIcon(context: Context, resourceName: String?): Int {
-        return getCustomIconOrDefault(context, manifestIconNext, resourceName, R.drawable.exo_icon_next)
+        return getCustomIconOrDefault(context, manifestIconNext, resourceName, R.drawable.ic_media_next)
     }
 
     private fun getPrevIcon(context: Context, resourceName: String?): Int {
-        return getCustomIconOrDefault(context, manifestIconPrev, resourceName, R.drawable.exo_icon_previous)
+        return getCustomIconOrDefault(context, manifestIconPrev, resourceName, R.drawable.ic_media_previous)
     }
 
     private fun getStopIcon(context: Context, resourceName: String?): Int {
-        return getCustomIconOrDefault(context, manifestIconStop, resourceName, R.drawable.exo_icon_stop)
+        return getCustomIconOrDefault(context, manifestIconStop, resourceName, R.drawable.checkbox_off_background)
     }
 
     private fun getCustomIconOrDefault(context: Context, manifestName: String, resourceName: String?, defaultIcon: Int): Int {
@@ -346,12 +346,7 @@ class NotificationService : Service() {
                 }
                 .setShowWhen(false)
                 .build()
-
-        if (Build.VERSION.SDK_INT >= 29) {
-            startForeground(NOTIFICATION_ID, notification, FOREGROUND_SERVICE_TYPE_MEDIA_PLAYBACK)
-        } else {
-            startForeground(NOTIFICATION_ID, notification)
-        }
+        startForeground(NOTIFICATION_ID, notification)
 
         //fix for https://github.com/florent37/Flutter-AssetsAudioPlayer/issues/139
         if (!action.isPlaying && Build.VERSION.SDK_INT >= 24) {
